@@ -19,13 +19,15 @@
         </ul>
       </nav>
     </header>
-    <div class="container">
-      <aside class="aside">
-        <router-view name="sidebar" />
-      </aside>
-      <main>
-        <router-view />
-      </main>
+    <div class="page">
+      <div class="container">
+        <aside class="aside">
+          <router-view name="sidebar" />
+        </aside>
+        <main>
+          <router-view />
+        </main>
+      </div>
     </div>
   </div>
 </template>
@@ -53,11 +55,13 @@ body {
 }
 
 main {
+  flex-shrink: 0;
   margin: 0;
   padding: 30px;
   background-color: white;
   width: 964px;
   min-height: 300px;
+  display: inline-block;
 }
 
 header {
@@ -96,8 +100,13 @@ ul {
 
 .container {
   display: flex;
-  margin: 10px auto 0 auto;
+
   justify-content: center;
+}
+
+.page {
+  width: 1184px;
+  margin: 10px auto 0 auto;
 }
 
 .aside {
@@ -113,7 +122,6 @@ ul {
   font-size: 18px;
   width: 20px;
   text-align: center;
-  display: inline-block;
   border-radius: 100px;
   background-color: mediumseagreen;
 }

@@ -56,13 +56,14 @@
   </div>
 </template>
 <script>
+import { mapActions } from 'vuex';
 import PartSelector from './PartSelector.vue';
 import CollapsibleSection from '../shared/CollapsibleSection.vue';
 
 export default {
   name: 'RobotBuilder',
   created() {
-    this.$store.dispatch('robots/getParts');
+    this.getParts();
   },
   beforeRouteLeave(to, from, next) {
     if (this.addedToCart) {
@@ -71,7 +72,7 @@ export default {
       /* eslint no-restricted-globals: 0 */
       // eslint-disable-next-line no-alert
       const response = confirm(
-        'You have not added your robot to the cart, are you sure you want to leave?',
+        'You have not added your robot to the cart, are you sure you want to leave?'
       );
       next(response);
     }
@@ -85,8 +86,8 @@ export default {
         torso: {},
         leftArm: {},
         rightArm: {},
-        base: {},
-      },
+        base: {}
+      }
     };
   },
   computed: {
@@ -95,9 +96,10 @@ export default {
     },
     saleBorderClass() {
       return this.selectedRobot.head.onSale ? 'sale-border' : '';
-    },
+    }
   },
   methods: {
+    ...mapActions('robots', ['getParts', 'addRobotToCart']),
     addToCart() {
       const robot = this.selectedRobot;
       // eslint-disable-next-line
@@ -107,12 +109,13 @@ export default {
         + robot.leftArm.cost
         + robot.rightArm.cost
         + robot.base.cost;
-      this.$store
-        .dispatch('robots/addRobotToCart', Object.assign({}, robot, { cost }))
-        .then(() => this.$router.push('/cart'));
+
+      /* eslint comma-dangle: ["error", "only-multiline"] */
+
+      this.addRobotToCart(Object.assign({}, robot, { cost })).then(() => this.$router.push('/cart'));
       this.addedToCart = true;
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
