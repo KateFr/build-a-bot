@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="availableParts">
     <div class="content">
       <div class="preview">
         <CollapsibleSection>
@@ -53,34 +53,19 @@
         @partSelected="part => selectedRobot.base=part"
       />
     </div>
-    <div>
-      <h1>Cart</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Robot</th>
-            <th class="cost">Cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(robot,index) in cart" :key="index">
-            <td>{{robot.head.title}}</td>
-            <td>{{robot.cost}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 </template>
 <script>
-import availableParts from '../data/parts';
 import PartSelector from './PartSelector.vue';
 import CollapsibleSection from '../shared/CollapsibleSection.vue';
 
 export default {
   name: 'RobotBuilder',
+  created() {
+    this.$store.dispatch('robots/getParts');
+  },
   beforeRouteLeave(to, from, next) {
-    if (this.asddedToCart) {
+    if (this.addedToCart) {
       next(true);
     } else {
       /* eslint no-restricted-globals: 0 */
@@ -95,8 +80,6 @@ export default {
   data() {
     return {
       addedToCart: false,
-      cart: [],
-      availableParts,
       selectedRobot: {
         head: {},
         torso: {},
@@ -107,6 +90,9 @@ export default {
     };
   },
   computed: {
+    availableParts() {
+      return this.$store.state.robots.parts;
+    },
     saleBorderClass() {
       return this.selectedRobot.head.onSale ? 'sale-border' : '';
     },
@@ -114,12 +100,16 @@ export default {
   methods: {
     addToCart() {
       const robot = this.selectedRobot;
-      const cost =        robot.head.cost
+      // eslint-disable-next-line
+      const cost =
+        robot.head.cost
         + robot.torso.cost
         + robot.leftArm.cost
         + robot.rightArm.cost
         + robot.base.cost;
-      this.cart.push(Object.assign({}, robot, { cost }));
+      this.$store
+        .dispatch('robots/addRobotToCart', Object.assign({}, robot, { cost }))
+        .then(() => this.$router.push('/cart'));
       this.addedToCart = true;
     },
   },
